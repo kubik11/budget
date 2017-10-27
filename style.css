@@ -33,7 +33,7 @@ body {
 
 .top {
     height: 40vh;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url(back.png);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url(money-usa.jpg);
     background-size: cover;
     background-position: center;
     position: relative;
@@ -41,11 +41,12 @@ body {
 
 .budget {
     position: absolute;
-    width: 350px;
+    width: 450px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: #fff;
+    opacity: 0.9;
 }
 
 .budget__title {
@@ -56,7 +57,7 @@ body {
 }
 
 .budget__value {
-    font-weight: 300;
+    font-weight: 600;
     font-size: 46px;
     text-align: center;
     margin-bottom: 25px;
@@ -78,14 +79,15 @@ body {
     background-color: #FF5049;
 }
 
-.budget__income--text,
-.budget__expenses--text {
+.budget__income--text, .budget__expenses--text {
     float: left;
     font-size: 13px;
-    color: #444;
+    color: #000;
+    font-weight: 600;
     margin-top: 2px;
+    letter-spacing: 3px;
+    margin-left: 10px;
 }
-
 .budget__income--value,
 .budget__expenses--value {
     letter-spacing: 1px;
