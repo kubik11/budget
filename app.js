@@ -11,6 +11,11 @@ var budgetModel = (function(){
 		this.id = id;
 	}
 	// percentage upone each of elements
+	var percent = function(a, b){
+		var current;
+			current = Math.round((a / b)*100) + "%";
+		return current;
+	}
 	// Set the item ID
 	var setId = function(){
 		var id;
@@ -92,7 +97,7 @@ var budgetModel = (function(){
 			return currentData.percentage();
 		},
 		itemPercent: function(){
-			return percent();
+			return percent(data[data.length - 1].count, currentData.income);
 		}
 	}
 
@@ -123,7 +128,7 @@ var budgetUI = (function(){
 		document.querySelector(DOMstring.total).textContent = tot;
 	}
 	// add items to Users interface list
-	function addItem(objType){
+	function addItem(objType, eachPercent){
 		var html, incList, expList, itemPer;
 			incList = document.querySelector(DOMstring.incomeList);
 			expList = document.querySelector(DOMstring.expensesList);
@@ -138,7 +143,7 @@ var budgetUI = (function(){
 			html = html.replace('%id%', objType[objType.length - 1].id);
 			html = html.replace('%description%', objType[objType.length - 1].description);
 			html = html.replace('%value%', objType[objType.length - 1].count);
-			// html = html.replace('%21%', objType[objType.length - 1].percent);
+			html = html.replace('%21%', eachPercent);
 			expList.insertAdjacentHTML('beforeend', html);
 		}	
 	}
@@ -170,7 +175,7 @@ var budgetUI = (function(){
 // Init budget controller
 
 var budgetController = (function(model, UI){
-	var str, budgetModel, budgetUI;
+	var str, data, budgetModel, budgetUI;
 	 budgetModel = model;
 	 budgetUI = UI;
 	 str = budgetUI.getString();
@@ -201,7 +206,7 @@ var budgetController = (function(model, UI){
 		// 3 Calculate the values
 		 	budgetUI.viewUpdate(budgetModel.income(), budgetModel.expenses(), budgetModel.total());
 	 	// 4 Refresh the view
-	 		budgetUI.itemUpdate(budgetModel.test());
+	 		budgetUI.itemUpdate(budgetModel.test(), budgetModel.itemPercent());
  		// 5 Update percantage
  			budgetUI.percentUpdate(budgetModel.getPersentage());
 		}else{
