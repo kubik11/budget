@@ -26,6 +26,15 @@ var budgetModel = (function(){
 		}
 		return id;
 	}
+	// Delite budget item 
+	function delIt(elem){
+		var item = elem.split('-');
+		data.forEach(function(element, i, arr){
+			if(arr[i].id == item[1]){
+				arr.splice(i, 1);
+			}
+		});
+	}
 	// Object where sit all current data
 	var currentData = {
 		income: 0,
@@ -68,6 +77,19 @@ var budgetModel = (function(){
 			console.log('fuck off');
 			this.expenses += el;
 			// this.total();
+		},
+		update: function(){
+			this.income = 0;
+			this.expenses = 0;
+			data.forEach(function(e, i, arr){
+				if(arr[i].act == 'inc'){
+					this.income += arr[i].count;
+				}
+				if(arr[i].act == 'exp'){
+					this.expenses += arr[i].count;
+				}
+
+			});
 		}
 	}
 	// return public methods
@@ -98,6 +120,15 @@ var budgetModel = (function(){
 		},
 		itemPercent: function(){
 			return percent(data[data.length - 1].count, currentData.income);
+		},
+		setEachPercent: function(){
+			data[data.length - 1].each = percent(data[data.length - 1].count, currentData.income);
+		},
+		itemDel: function(el){
+			return delIt(el);
+		},
+		upDate: function(){
+			return currentData.update();
 		}
 	}
 
@@ -119,6 +150,7 @@ var budgetUI = (function(){
 		incomeList: '.income__list',
 		expensesList: '.expenses__list',
 		percent: '.budget__expenses--percentage',
+		itemDel: '.container'
 		// itemPercent: '.item__percentage'
 	}
 	// update the buget UI
@@ -128,7 +160,7 @@ var budgetUI = (function(){
 		document.querySelector(DOMstring.total).textContent = tot;
 	}
 	// add items to Users interface list
-	function addItem(objType, eachPercent){
+	function addItem(objType){
 		var html, incList, expList, itemPer;
 			incList = document.querySelector(DOMstring.incomeList);
 			expList = document.querySelector(DOMstring.expensesList);
@@ -143,9 +175,31 @@ var budgetUI = (function(){
 			html = html.replace('%id%', objType[objType.length - 1].id);
 			html = html.replace('%description%', objType[objType.length - 1].description);
 			html = html.replace('%value%', objType[objType.length - 1].count);
-			html = html.replace('%21%', eachPercent);
+			html = html.replace('%21%', objType[objType.length - 1].each);
 			expList.insertAdjacentHTML('beforeend', html);
 		}	
+	}
+	// update buget items after removing
+	function updateAfter(objType){
+		var html, incList, expList, itemPer;
+			incList = document.querySelector(DOMstring.incomeList);
+			expList = document.querySelector(DOMstring.expensesList);
+		objType.forEach(function(e, i, arr){
+			if(arr[i].act == 'inc'){
+				html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+				html = html.replace('%id%', arr[i].id);
+				html = html.replace('%description%', arr[i].description);
+				html = html.replace('%value%', arr[i].count);
+				incList.insertAdjacentHTML('beforeend', html);
+			}else{
+				html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">%21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+				html = html.replace('%id%', arr[i].id);
+				html = html.replace('%description%', arr[i].description);
+				html = html.replace('%value%', arr[i].count);
+				html = html.replace('%21%', arr[i].each);
+				expList.insertAdjacentHTML('beforeend', html);
+			}	
+		});
 	}
 	return{
 		getString: function (){
@@ -156,6 +210,9 @@ var budgetUI = (function(){
 		},
 		itemUpdate: function(objType, objPer){
 			return addItem(objType, objPer);
+		},
+		upAfter: function(objType){
+			return updateAfter(objType)
 		},
 		clearFields: function(){
 			var fields, fieldsArray;
@@ -205,12 +262,34 @@ var budgetController = (function(model, UI){
 			budgetModel.toCalc();
 		// 3 Calculate the values
 		 	budgetUI.viewUpdate(budgetModel.income(), budgetModel.expenses(), budgetModel.total());
+			budgetModel.setEachPercent();
 	 	// 4 Refresh the view
-	 		budgetUI.itemUpdate(budgetModel.test(), budgetModel.itemPercent());
+	 		budgetUI.itemUpdate(budgetModel.test());
  		// 5 Update percantage
  			budgetUI.percentUpdate(budgetModel.getPersentage());
 		}else{
 			console.log('Please, insert required value');
 		}
+		 // Удаление элементов
+
+		document.querySelector(str.itemDel).addEventListener('click', function(e){
+			var target, chosen;
+			target = e.target;
+			chosen = target.parentNode.parentNode.parentNode.parentNode.getAttribute('id');
+			console.log(chosen);
+			// delitetion budget items
+			budgetModel.itemDel(chosen);
+			console.log('haile');
+			// Clear the fields of inputs UI
+			budgetUI.clearFields();
+		// 3 Calculate the values
+			budgetModel.upDate();
+		 	budgetUI.viewUpdate(budgetModel.income(), budgetModel.expenses(), budgetModel.total());
+			//budgetModel.setEachPercent();
+	 	// 4 Refresh the view
+	 		budgetUI.upAfter(budgetModel.test());
+ 		// 5 Update percantage
+ 			budgetUI.percentUpdate(budgetModel.getPersentage());
+		});
 	}
 })(budgetModel, budgetUI)
