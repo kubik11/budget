@@ -217,13 +217,13 @@ var budgetUI = (function(){
 			incList = document.querySelector(DOMstring.incomeList);
 			expList = document.querySelector(DOMstring.expensesList);
 		if(objType[objType.length - 1].act == 'inc'){
-			html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+			html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">+ %value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
 			html = html.replace('%id%', objType[objType.length - 1].id);
 			html = html.replace('%description%', objType[objType.length - 1].description);
 			html = html.replace('%value%', objType[objType.length - 1].count);
 			incList.insertAdjacentHTML('beforeend', html);
 		}else{
-			html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">%21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+			html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">- %value%</div><div class="item__percentage">%21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
 			html = html.replace('%id%', objType[objType.length - 1].id);
 			html = html.replace('%description%', objType[objType.length - 1].description);
 			html = html.replace('%value%', objType[objType.length - 1].count);
@@ -251,13 +251,13 @@ var budgetUI = (function(){
 		// update UI items
 		objType.forEach(function(e, i, arr){
 				if(arr[i].act == 'inc'){
-					 html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+					 html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">+ %value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
 					 html = html.replace('%id%', arr[i].id);
 					 html = html.replace('%description%', arr[i].description);
 					 html = html.replace('%value%', arr[i].count);
 					 incList.insertAdjacentHTML('beforeend', html);
 				}else{				
-					html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">%21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+					html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">- %value%</div><div class="item__percentage">%21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
 					html = html.replace('%id%', arr[i].id);
 					html = html.replace('%description%', arr[i].description);
 					html = html.replace('%value%', arr[i].count);
