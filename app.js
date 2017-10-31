@@ -42,6 +42,49 @@ var budgetModel = (function(){
 		total: function(){
 			return this.income - this.expenses;
 		},
+		month: function(){
+			var date = new Date();
+			date = date.getUTCMonth();
+			switch(date){
+				case 0:
+					date = 'January';
+						break;
+				case 1: 
+					date = 'Fabruary';
+						break;
+				case 2: 
+					date = 'March';
+						break;
+				case 3: 
+					date = 'April';
+						break;
+				case 4: 
+					date = 'May';
+						break;
+				case 5: 
+					date = 'June';
+						break;
+				case 6: 
+					date = 'July';
+						break;
+				case 7: 
+					date = 'August';
+						break;
+				case 8: 
+					date = 'September';
+						break;
+				case 9: 
+					date = 'October';
+						break;
+				case 10: 
+					date = 'November';
+						break;
+				case 11: 
+					date = 'December';
+						break;
+			}
+			return date;
+		},
 		percentage: function(){
 			var per;
 			if(this.expenses == 0){
@@ -81,14 +124,15 @@ var budgetModel = (function(){
 		update: function(){
 			this.income = 0;
 			this.expenses = 0;
+			var self = this;
 			data.forEach(function(e, i, arr){
 				if(arr[i].act == 'inc'){
-					this.income += arr[i].count;
+					self.income += arr[i].count;
+					console.log('its work');
 				}
 				if(arr[i].act == 'exp'){
-					this.expenses += arr[i].count;
+					self.expenses += arr[i].count;
 				}
-
 			});
 		}
 	}
@@ -129,6 +173,9 @@ var budgetModel = (function(){
 		},
 		upDate: function(){
 			return currentData.update();
+		},
+		getMonth: function(){
+			return currentData.month();
 		}
 	}
 
@@ -150,8 +197,13 @@ var budgetUI = (function(){
 		incomeList: '.income__list',
 		expensesList: '.expenses__list',
 		percent: '.budget__expenses--percentage',
-		itemDel: '.container'
+		itemDel: '.container',
+		month: '.budget__title--month'
 		// itemPercent: '.item__percentage'
+	}
+	// set the month
+	function setMonth(m){
+		document.querySelector(DOMstring.month).textContent = m;
 	}
 	// update the buget UI
 	function update(inc, exp, tot){
@@ -184,22 +236,35 @@ var budgetUI = (function(){
 		var html, incList, expList, itemPer;
 			incList = document.querySelector(DOMstring.incomeList);
 			expList = document.querySelector(DOMstring.expensesList);
+		// clear UI items
+			objType.forEach(function(e, i, arr){
+				if(arr[i].act == 'inc'){
+					while (incList.firstChild) {
+	   					 incList.removeChild(incList.firstChild);
+					}
+				}else{
+					while (expList.firstChild) {
+		   				 expList.removeChild(expList.firstChild);
+					}
+				}
+			});
+		// update UI items
 		objType.forEach(function(e, i, arr){
-			if(arr[i].act == 'inc'){
-				html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
-				html = html.replace('%id%', arr[i].id);
-				html = html.replace('%description%', arr[i].description);
-				html = html.replace('%value%', arr[i].count);
-				incList.insertAdjacentHTML('beforeend', html);
-			}else{
-				html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">%21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
-				html = html.replace('%id%', arr[i].id);
-				html = html.replace('%description%', arr[i].description);
-				html = html.replace('%value%', arr[i].count);
-				html = html.replace('%21%', arr[i].each);
-				expList.insertAdjacentHTML('beforeend', html);
-			}	
-		});
+				if(arr[i].act == 'inc'){
+					 html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+					 html = html.replace('%id%', arr[i].id);
+					 html = html.replace('%description%', arr[i].description);
+					 html = html.replace('%value%', arr[i].count);
+					 incList.insertAdjacentHTML('beforeend', html);
+				}else{				
+					html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">%21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+					html = html.replace('%id%', arr[i].id);
+					html = html.replace('%description%', arr[i].description);
+					html = html.replace('%value%', arr[i].count);
+					html = html.replace('%21%', arr[i].each);
+					expList.insertAdjacentHTML('beforeend', html);
+				}	
+			});
 	}
 	return{
 		getString: function (){
@@ -225,6 +290,9 @@ var budgetUI = (function(){
 		},
 		percentUpdate: function(element){
 			 document.querySelector(DOMstring.percent).textContent = element;
+		},
+		setCurrentMonth: function(el){
+			return setMonth(el);
 		}
 	}
 })()
@@ -262,6 +330,7 @@ var budgetController = (function(model, UI){
 			budgetModel.toCalc();
 		// 3 Calculate the values
 		 	budgetUI.viewUpdate(budgetModel.income(), budgetModel.expenses(), budgetModel.total());
+		 	budgetUI.setCurrentMonth(budgetModel.getMonth());
 			budgetModel.setEachPercent();
 	 	// 4 Refresh the view
 	 		budgetUI.itemUpdate(budgetModel.test());
@@ -275,21 +344,23 @@ var budgetController = (function(model, UI){
 		document.querySelector(str.itemDel).addEventListener('click', function(e){
 			var target, chosen;
 			target = e.target;
-			chosen = target.parentNode.parentNode.parentNode.parentNode.getAttribute('id');
-			console.log(chosen);
-			// delitetion budget items
-			budgetModel.itemDel(chosen);
-			console.log('haile');
-			// Clear the fields of inputs UI
-			budgetUI.clearFields();
-		// 3 Calculate the values
-			budgetModel.upDate();
-		 	budgetUI.viewUpdate(budgetModel.income(), budgetModel.expenses(), budgetModel.total());
-			//budgetModel.setEachPercent();
-	 	// 4 Refresh the view
-	 		budgetUI.upAfter(budgetModel.test());
- 		// 5 Update percantage
- 			budgetUI.percentUpdate(budgetModel.getPersentage());
+			if(target.parentNode.classList.contains('item__delete--btn')){
+				chosen = target.parentNode.parentNode.parentNode.parentNode.getAttribute('id');
+				console.log(chosen);
+				// delitetion budget items
+				budgetModel.itemDel(chosen);
+				console.log('haile');
+				// Clear the fields of inputs UI
+				budgetUI.clearFields();
+			// 3 Calculate the values
+				budgetModel.upDate();
+			 	budgetUI.viewUpdate(budgetModel.income(), budgetModel.expenses(), budgetModel.total());
+				//budgetModel.setEachPercent();
+		 	// 4 Refresh the view
+		 		budgetUI.upAfter(budgetModel.test());
+	 		// 5 Update percantage
+	 			budgetUI.percentUpdate(budgetModel.getPersentage());
+			}
 		});
 	}
 })(budgetModel, budgetUI)
